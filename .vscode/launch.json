@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "VanGo Kiosk",
+            "request": "launch",
+            "mainClass": "VanGoKiosk",
+            "projectName": "VanGo",
+            "vmArgs": "--module-path \"C:/Users/paul/Documents/ACTIVITIES IN 3RD YEAR/VanGo/javafx-sdk-27/lib\" --add-modules javafx.controls,javafx.web,javafx.swing"
+        }
+    ]
+}

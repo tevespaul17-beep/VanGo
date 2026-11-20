@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Schedule {
@@ -18,6 +20,8 @@ public class Schedule {
     private DispatchState state = DispatchState.SCHEDULED;
     private boolean driverDepartureRequested = false;
     private String rejectionReason = "";
+    private String dispatchedAt = "";
+    private List<String> chosenRoute = new ArrayList<>();
 
     public Schedule(String id, String destination, String departureTime, double fare, Van van) {
         this.id = id;
@@ -25,6 +29,7 @@ public class Schedule {
         this.departureTime = departureTime;
         this.fare = fare;
         this.van = van;
+        this.chosenRoute = new ArrayList<>(RouteCorridor.getCanonicalRoute(destination));
     }
 
     public String getId() { return id; }
@@ -61,4 +66,17 @@ public class Schedule {
 
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+
+    public String getDispatchedAt() { return dispatchedAt; }
+    public void setDispatchedAt(String dispatchedAt) { this.dispatchedAt = dispatchedAt; }
+
+    public List<String> getChosenRoute() {
+        if (chosenRoute == null || chosenRoute.isEmpty()) {
+            return RouteCorridor.getCanonicalRoute(destination);
+        }
+        return chosenRoute;
+    }
+    public void setChosenRoute(List<String> chosenRoute) {
+        this.chosenRoute = chosenRoute != null ? new ArrayList<>(chosenRoute) : new ArrayList<>();
+    }
 }

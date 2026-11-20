@@ -55,6 +55,12 @@ public class VanBackgroundPanel extends JPanel {
     public Rectangle2D getImageBounds() {
         int availableWidth = CANVAS_WIDTH - IMAGE_PADDING * 2;
         int availableHeight = CANVAS_HEIGHT - IMAGE_PADDING * 2;
+        
+        // Fallback if image is still loading or missing
+        if (vanImage == null) {
+            return new Rectangle2D.Double(IMAGE_PADDING, IMAGE_PADDING, availableWidth, availableHeight);
+        }
+
         double scale = Math.min(
                 (double) availableWidth / vanImage.getWidth(),
                 (double) availableHeight / vanImage.getHeight());
@@ -104,6 +110,8 @@ public class VanBackgroundPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (vanImage == null) return; // Don't paint if image failed to load
+
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);

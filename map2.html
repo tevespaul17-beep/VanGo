@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>VanGo Leyte GPS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #E2E8F0;
+            overflow: hidden;
+        }
+        .leaflet-container {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #E2E8F0 !important;
+        }
+
+        /* Prevent JavaFX WebView tile tearing and missing blocks */
+        .leaflet-tile,
+        .leaflet-tile-container,
+        .leaflet-pane,
+        .leaflet-map-pane {
+            will-change: auto !important;
+            -webkit-backface-visibility: visible !important;
+            backface-visibility: visible !important;
+        }
+
+        .custom-marker {
+            background-color: #FF6B00;
+            border: 2px solid #1E293B;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+            cursor: pointer;
+        }
+        .custom-marker.active {
+            background-color: #2563EB;
+            border-color: #FFFFFF;
+            box-shadow: 0 0 0 3px #2563EB, 0 3px 6px rgba(0,0,0,0.4);
+        }
+        .hub-marker {
+            background-color: #1E293B;
+            border: 3px solid #FF6B00;
+            width: 20px;
+            height: 20px;
+        }
+        .waypoint-dot {
+            background-color: #FF6B00;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            width: 11px;
+            height: 11px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+        }
+        .waypoint-dot.start { background-color: #1E293B; }
+        .waypoint-dot.end   { background-color: #2563EB; }
+
+        /* Permanent clean pin labels positioned right beside each municipality */
+        .pin-label {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #CBD5E1;
+            border-radius: 4px;
+            color: #0F172A;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+            white-space: nowrap;
+        }
+        .pin-label::before {
+            display: none;
+        }
+        .pin-label.hub-label {
+            background: #1E293B;
+            color: #FFFFFF;
+            border-color: #FF6B00;
+        }
+        .pin-label.active-label {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-color: #1D4ED8;
+        }
+    </style>
+    <script>
+        // Force 2D top/left positioning in JavaFX WebView
+        window.L_DISABLE_3D = true;
+    </script>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Exact Poblacion / Town Center GPS coordinates aligned to Esri map labels & highways
+        var locations = {
+            // Hub
+            "Ormoc City":            {lat: 11.0064, lng: 124.6075, isHub: true, dir: 'right'},
+
+            // South Corridor (Ormoc -> Baybay -> Hilongos -> Bato -> Maasin)
+            "Albuera":               {lat: 10.9167, lng: 124.6961, dir: 'right'},
+            "Baybay City":           {lat: 10.6786, lng: 124.8006, dir: 'right'},
+            "Inopacan":              {lat: 10.5011, lng: 124.7375, dir: 'left'},
+            "Hindang":               {lat: 10.4361, lng: 124.7253, dir: 'left'},
+            "Hilongos":              {lat: 10.3764, lng: 124.7481, dir: 'left'},
+            "Bato":                  {lat: 10.3267, lng: 124.7919, dir: 'right'},
+            "Matalom":               {lat: 10.2736, lng: 124.7875, dir: 'left'},
+            "Maasin City":           {lat: 10.1336, lng: 124.8447, dir: 'right'},
+
+            // East Corridor (Ormoc -> Kananga -> Carigara -> Jaro -> Palo -> Tacloban)
+            "Kananga":               {lat: 11.1867, lng: 124.5597, dir: 'left'},
+            "Capoocan":              {lat: 11.2925, lng: 124.6447, dir: 'top'},
+            "Carigara":              {lat: 11.3014, lng: 124.6875, dir: 'right'},
+            "Tunga":                 {lat: 11.2456, lng: 124.7486, dir: 'right'},
+            "Jaro":                  {lat: 11.1856, lng: 124.7847, dir: 'left'},
+            "Alangalang":            {lat: 11.2056, lng: 124.8469, dir: 'top'},
+            "Santa Fe":              {lat: 11.1847, lng: 124.9161, dir: 'top'},
+            "Palo":                  {lat: 11.1583, lng: 124.9917, dir: 'left'},
+            "Tanauan":               {lat: 11.1097, lng: 125.0161, dir: 'left'},
+            "Tacloban City":         {lat: 11.2433, lng: 125.0047, dir: 'right'},
+
+            // West Corridor (Ormoc -> Merida -> Isabel -> Palompon)
+            "Merida":                {lat: 10.9094, lng: 124.5378, dir: 'left'},
+            "Isabel":                {lat: 10.9275, lng: 124.4342, dir: 'left'},
+            "Palompon":              {lat: 11.0497, lng: 124.3853, dir: 'left'},
+
+            // North / Biliran Corridor (Ormoc -> Kananga -> Capoocan -> Leyte -> Biliran -> Naval)
+            "Leyte":                 {lat: 11.3753, lng: 124.4922, dir: 'right'},
+            "Biliran":               {lat: 11.4664, lng: 124.4744, dir: 'right'},
+            "Naval":                 {lat: 11.5619, lng: 124.3967, dir: 'left'},
+
+            // Southern Leyte Pacific / Sogod Bay Corridor
+            "Bontoc":                {lat: 10.3547, lng: 124.9675, dir: 'left'},
+            "Sogod":                 {lat: 10.3864, lng: 124.9806, dir: 'right'},
+            "Sogod (So. Leyte)":     {lat: 10.3864, lng: 124.9806, dir: 'right', alias: true},
+            "Libagon":               {lat: 10.2969, lng: 125.0503, dir: 'right'},
+            "Saint Bernard":         {lat: 10.2669, lng: 125.1336, dir: 'top'},
+            "San Juan":              {lat: 10.2661, lng: 125.1669, dir: 'right'},
+            "San Juan (So. Leyte)":  {lat: 10.2661, lng: 125.1669, dir: 'right', alias: true},
+            "Hinundayan":            {lat: 10.3519, lng: 125.2506, dir: 'right'},
+            "Hinunangan":            {lat: 10.4017, lng: 125.1997, dir: 'top'}
+        };
+
+        var map = L.map('map', {
+            zoomControl: true,
+            minZoom: 8,
+            maxZoom: 16,
+            zoomAnimation: false,
+            fadeAnimation: false,
+            markerZoomAnimation: false,
+            preferCanvas: true
+        }).setView([10.75, 124.80], 9);
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 16,
+            attribution: 'Tiles &copy; Esri &mdash; OpenStreetMap contributors',
+            updateWhenIdle: false,
+            updateWhenZooming: false,
+            keepBuffer: 6
+        }).addTo(map);
+
+        var routeLayer = L.layerGroup().addTo(map);
+        var markerLayer = L.layerGroup().addTo(map);
+        var destMarkers = {};
+        var lastBounds = null;
+
+        function syncMapSize() {
+            map.invalidateSize({animate: false});
+            if (lastBounds) {
+                map.fitBounds(lastBounds, {padding: [55, 55], animate: false});
+            }
+        }
+
+        window.addEventListener('resize', syncMapSize);
+        setTimeout(syncMapSize, 150);
+        setTimeout(syncMapSize, 500);
+
+        function getOffsetForDir(dir, isHub) {
+            var r = isHub ? 12 : 9;
+            if (dir === 'left')   return [-r, 0];
+            if (dir === 'top')    return [0, -r];
+            if (dir === 'bottom') return [0, r];
+            return [r, 0];
+        }
+
+        function buildMarkers() {
+            Object.keys(locations).forEach(function(name) {
+                var loc = locations[name];
+                if (loc.alias) return; // Avoid duplicate overlapping pins for "(So. Leyte)" aliases
+
+                var isHub = !!loc.isHub;
+                var dir = loc.dir || 'right';
+                var icon = L.divIcon({
+                    className: '',
+                    html: '<div class="custom-marker ' + (isHub ? 'hub-marker' : '') + '"></div>',
+                    iconSize: isHub ? [20, 20] : [14, 14],
+                    iconAnchor: isHub ? [10, 10] : [7, 7]
+                });
+
+                var m = L.marker([loc.lat, loc.lng], {icon: icon}).addTo(markerLayer);
+                m.bindTooltip(name, {
+                    permanent: true,
+                    direction: dir,
+                    offset: getOffsetForDir(dir, isHub),
+                    className: 'pin-label' + (isHub ? ' hub-label' : '')
+                });
+                m.on('click', function() { pickDestination(name); });
+                destMarkers[name] = m;
+            });
+
+            // Link alias names to their primary marker so active styling works for both
+            destMarkers["Sogod (So. Leyte)"] = destMarkers["Sogod"];
+            destMarkers["San Juan (So. Leyte)"] = destMarkers["San Juan"];
+        }
+
+        function pickDestination(name) {
+            if (window.javaBridge && window.javaBridge.onDestinationPicked) {
+                window.javaBridge.onDestinationPicked(name);
+            }
+        }
+
+        function updateRoute(destName, waypointName, customRoute) {
+            map.invalidateSize({animate: false});
+            routeLayer.clearLayers();
+            if (!destName) return;
+
+            // Reset active states on all pins & labels
+            Object.keys(destMarkers).forEach(function(n) {
+                var marker = destMarkers[n];
+                if (!marker) return;
+                var el = marker.getElement();
+                if (el) {
+                    var dot = el.querySelector('.custom-marker');
+                    if (dot) dot.classList.remove('active');
+                }
+                var tt = marker.getTooltip();
+                if (tt && tt.getElement()) {
+                    tt.getElement().classList.remove('active-label');
+                }
+            });
+
+            // Highlight selected destination pin & label
+            if (destMarkers[destName]) {
+                var activeMarker = destMarkers[destName];
+                var el = activeMarker.getElement();
+                if (el) {
+                    var dot = el.querySelector('.custom-marker');
+                    if (dot) dot.classList.add('active');
+                }
+                var tt = activeMarker.getTooltip();
+                if (tt && tt.getElement()) {
+                    tt.getElement().classList.add('active-label');
+                }
+            }
+
+            var route = null;
+            if (Array.isArray(customRoute) && customRoute.length > 0) {
+                route = customRoute;
+            } else if (window.ROUTE_CORRIDORS[destName]) {
+                route = window.ROUTE_CORRIDORS[destName];
+            } else {
+                route = ['Ormoc City', destName];
+            }
+
+            var pathPoints = [];
+            var validNames = [];
+            route.forEach(function(n) {
+                var loc = locations[n];
+                if (loc) {
+                    pathPoints.push([loc.lat, loc.lng]);
+                    validNames.push(n);
+                }
+            });
+
+            if (pathPoints.length < 2) return;
+
+            var polyline = L.polyline(pathPoints, {
+                color: '#FF6B00',
+                weight: 5,
+                opacity: 0.92,
+                lineJoin: 'round'
+            }).addTo(routeLayer);
+
+            validNames.forEach(function(name, idx) {
+                var loc = locations[name];
+                var cls = 'waypoint-dot';
+                if (idx === 0) cls += ' start';
+                else if (idx === validNames.length - 1) cls += ' end';
+                var dotIcon = L.divIcon({
+                    className: '',
+                    html: '<div class="' + cls + '"></div>',
+                    iconSize: [11, 11],
+                    iconAnchor: [5.5, 5.5]
+                });
+                L.marker([loc.lat, loc.lng], {icon: dotIcon, interactive: false})
+                    .addTo(routeLayer);
+            });
+
+            lastBounds = polyline.getBounds();
+            map.fitBounds(lastBounds, {padding: [55, 55], animate: false});
+        }
+
+        function previewCustomRoute(routeArray) {
+            if (!Array.isArray(routeArray) || routeArray.length === 0) return;
+            var dest = routeArray[routeArray.length - 1];
+            updateRoute(dest, null, routeArray);
+        }
+
+        window.ROUTE_CORRIDORS = {
+            "Maasin City":   ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Matalom","Maasin City"],
+            "Matalom":       ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Matalom"],
+            "Bato":          ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato"],
+            "Hilongos":      ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos"],
+            "Hindang":       ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang"],
+            "Inopacan":      ["Ormoc City","Albuera","Baybay City","Inopacan"],
+            "Baybay City":   ["Ormoc City","Albuera","Baybay City"],
+            "Albuera":       ["Ormoc City","Albuera"],
+            "Tacloban City": ["Ormoc City","Kananga","Capoocan","Carigara","Tunga","Jaro","Alangalang","Santa Fe","Palo","Tacloban City"],
+            "Palo":          ["Ormoc City","Kananga","Capoocan","Carigara","Tunga","Jaro","Alangalang","Santa Fe","Palo"],
+            "Tanauan":       ["Ormoc City","Kananga","Capoocan","Carigara","Tunga","Jaro","Alangalang","Santa Fe","Palo","Tanauan"],
+            "Naval":         ["Ormoc City","Kananga","Capoocan","Leyte","Biliran","Naval"],
+            "Palompon":      ["Ormoc City","Merida","Isabel","Palompon"],
+            "Sogod":         ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod"],
+            "Sogod (So. Leyte)": ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod"],
+            "Libagon":       ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod","Libagon"],
+            "Saint Bernard": ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod","Libagon","Saint Bernard"],
+            "San Juan (So. Leyte)": ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod","Libagon","Saint Bernard","San Juan (So. Leyte)"],
+            "Hinundayan":    ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod","Libagon","Saint Bernard","San Juan (So. Leyte)","Hinundayan"],
+            "Hinunangan":    ["Ormoc City","Albuera","Baybay City","Inopacan","Hindang","Hilongos","Bato","Bontoc","Sogod","Libagon","Saint Bernard","San Juan (So. Leyte)","Hinundayan","Hinunangan"]
+        };
+
+        buildMarkers();
+        window.updateRoute = updateRoute;
+        window.previewCustomRoute = previewCustomRoute;
+        window.syncMapSize = syncMapSize;
+    </script>
+</body>
+</html>
