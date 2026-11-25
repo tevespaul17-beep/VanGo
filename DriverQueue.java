@@ -27,6 +27,11 @@ public class DriverQueue {
         return queue.peekFirst();
     }
 
+    public boolean removeVan(String destination, Van van) {
+        Deque<Van> queue = queuesByDestination.get(destination);
+        return queue != null && queue.removeIf(queuedVan -> queuedVan.getId().equals(van.getId()));
+    }
+
     public List<Van> getQueue(String destination) {
         Deque<Van> queue = queuesByDestination.get(destination);
         if (queue == null) return Collections.emptyList();

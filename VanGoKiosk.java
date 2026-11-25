@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -21,21 +20,21 @@ import javax.swing.table.DefaultTableModel;
 
 public class VanGoKiosk extends JFrame {
 
-    private static final Color BRAND_NAVY      = VanGoTheme.NAVY;
-    private static final Color BRAND_ORANGE    = VanGoTheme.ORANGE;
-    private static final Color BG_CANVAS       = VanGoTheme.BG;
-    private static final Color CARD_SURFACE    = VanGoTheme.SURFACE;
-    private static final Color BORDER_NEUTRAL  = VanGoTheme.BORDER;
-    private static final Color TEXT_PRIMARY    = VanGoTheme.TEXT;
-    private static final Color TEXT_MUTED      = VanGoTheme.TEXT_SECOND;
-    private static final Color SEMANTIC_GO     = VanGoTheme.GO;
-    private static final Color SEMANTIC_RED    = VanGoTheme.DANGER;
-    private static final Color SEMANTIC_AMBER  = VanGoTheme.WARN;
+    private static final Color BRAND_NAVY = VanGoTheme.NAVY;
+    private static final Color BRAND_ORANGE = VanGoTheme.ORANGE;
+    private static final Color BG_CANVAS = VanGoTheme.BG;
+    private static final Color CARD_SURFACE = VanGoTheme.SURFACE;
+    private static final Color BORDER_NEUTRAL = VanGoTheme.BORDER;
+    private static final Color TEXT_PRIMARY = VanGoTheme.TEXT;
+    private static final Color TEXT_MUTED = VanGoTheme.TEXT_SECOND;
+    private static final Color SEMANTIC_GO = VanGoTheme.GO;
+    private static final Color SEMANTIC_RED = VanGoTheme.DANGER;
+    private static final Color SEMANTIC_AMBER = VanGoTheme.WARN;
 
-    public static final String MODEL_HIACE_DELUXE   = "TOYOTA COMMUTER DELUXE";
+    public static final String MODEL_HIACE_DELUXE = "TOYOTA COMMUTER DELUXE";
     public static final String MODEL_HIACE_COMMUTER = "TOYOTA HIACE COMMUTER";
-    public static final String MODEL_NISSAN_NV350   = "NISSAN NV350";
-    public static final String MODEL_NISSAN_URVAN   = "NISSAN URVAN";
+    public static final String MODEL_NISSAN_NV350 = "NISSAN NV350";
+    public static final String MODEL_NISSAN_URVAN = "NISSAN URVAN";
 
     public static final String FILL_AND_DEPART_MODE = "Fill-and-Depart (No Fixed Time)";
     private static final double MIN_EARLY_LOAD_RATIO = 0.70;
@@ -112,19 +111,25 @@ public class VanGoKiosk extends JFrame {
         Driver d2 = new Driver("DRV02", "Ricardo Dalisay", "D02-19-112233", "0918-987-6543");
         Driver d3 = new Driver("DRV03", "Johanna Nicole Bacalso", "D05-21-445566", "0920-555-0199");
         Driver d4 = new Driver("DRV04", "Albert Xyron Cabillo", "D03-22-778899", "0921-777-8899");
-        drivers.add(d1); drivers.add(d2); drivers.add(d3); drivers.add(d4);
+        drivers.add(d1);
+        drivers.add(d2);
+        drivers.add(d3);
+        drivers.add(d4);
 
         Van v1 = new Van("VAN01", MODEL_HIACE_COMMUTER, "HA-9821", 14, d1, "");
-        Van v2 = new Van("VAN02", MODEL_HIACE_DELUXE,   "HD-5512", 14, d2, "");
-        Van v3 = new Van("VAN03", MODEL_NISSAN_NV350,   "NV-4410", 14, d3, "");
-        Van v4 = new Van("VAN04", MODEL_NISSAN_URVAN,   "NC-1092", 15, d4, "");
-        vans.add(v1); vans.add(v2); vans.add(v3); vans.add(v4);
+        Van v2 = new Van("VAN02", MODEL_HIACE_DELUXE, "HD-5512", 14, d2, "");
+        Van v3 = new Van("VAN03", MODEL_NISSAN_NV350, "NV-4410", 14, d3, "");
+        Van v4 = new Van("VAN04", MODEL_NISSAN_URVAN, "NC-1092", 15, d4, "");
+        vans.add(v1);
+        vans.add(v2);
+        vans.add(v3);
+        vans.add(v4);
 
         String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         Schedule s1 = new Schedule("SCH001", "Tacloban City", FILL_AND_DEPART_MODE, 250.00, v1);
-        Schedule s2 = new Schedule("SCH002", "Maasin City",   FILL_AND_DEPART_MODE, 350.00, v2);
-        Schedule s3 = new Schedule("SCH003", "Baybay City",   FILL_AND_DEPART_MODE, 180.00, v3);
+        Schedule s2 = new Schedule("SCH002", "Maasin City", FILL_AND_DEPART_MODE, 350.00, v2);
+        Schedule s3 = new Schedule("SCH003", "Baybay City", FILL_AND_DEPART_MODE, 180.00, v3);
         Schedule s4 = new Schedule("SCH004", "Tacloban City", FILL_AND_DEPART_MODE, 250.00, v4);
 
         schedules.add(s1);
@@ -137,9 +142,14 @@ public class VanGoKiosk extends JFrame {
             setQueueDate(s.getDestination(), s.getVan(), today);
         }
 
-        s1.bookSeat(1); s1.bookSeat(2); s1.bookSeat(3);
-        s2.bookSeat(4); s2.bookSeat(8);
-        s3.bookSeat(3); s3.bookSeat(7); s3.bookSeat(12);
+        s1.bookSeat(1);
+        s1.bookSeat(2);
+        s1.bookSeat(3);
+        s2.bookSeat(4);
+        s2.bookSeat(8);
+        s3.bookSeat(3);
+        s3.bookSeat(7);
+        s3.bookSeat(12);
     }
 
     private void initUI() {
@@ -149,13 +159,6 @@ public class VanGoKiosk extends JFrame {
         setMinimumSize(new Dimension(1024, 768));
         setLocationRelativeTo(null);
         getContentPane().setBackground(BG_CANVAS);
-
-        // Pre-initialize JavaFX toolkit to prevent blank map issue
-        try {
-            Platform.startup(() -> {});
-        } catch (IllegalStateException ignored) {
-            // Already initialized
-        }
 
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
@@ -171,6 +174,14 @@ public class VanGoKiosk extends JFrame {
 
         add(mainContainer);
         cardLayout.show(mainContainer, "WELCOME");
+    }
+
+    private void openScheduleView() {
+        renderScheduleCards();
+        cardLayout.show(mainContainer, "SCHEDULE");
+        if (regionalMapCanvas != null) {
+            SwingUtilities.invokeLater(() -> regionalMapCanvas.refreshMapLayout());
+        }
     }
 
     private JPanel createStatusHeader(String stepText, String titleText, boolean showStaffAccess, boolean showHomeButton) {
@@ -292,7 +303,7 @@ public class VanGoKiosk extends JFrame {
         lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblSubtitle = new JLabel(
-            "<html><div style='text-align:center; width:540px;'>Board the #1 queued van on your route — no fixed waiting clock; vans depart as soon as full.</div></html>");
+                "<html><div style='text-align:center; width:540px;'>Board the #1 queued van on your route — no fixed waiting clock; vans depart as soon as full.</div></html>");
         lblSubtitle.setFont(VanGoTheme.font(16, Font.PLAIN));
         lblSubtitle.setForeground(TEXT_MUTED);
         lblSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -301,10 +312,7 @@ public class VanGoKiosk extends JFrame {
         btnStart.setPreferredSize(new Dimension(360, 62));
         btnStart.setMaximumSize(new Dimension(360, 62));
         btnStart.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnStart.addActionListener(e -> {
-            renderScheduleCards();
-            cardLayout.show(mainContainer, "SCHEDULE");
-        });
+        btnStart.addActionListener(e -> openScheduleView());
 
         contentBox.add(heroLogo);
         contentBox.add(Box.createRigidArea(new Dimension(0, 18)));
@@ -376,8 +384,6 @@ public class VanGoKiosk extends JFrame {
         mapHeader.add(lblBreadcrumb);
 
         regionalMapCanvas = new RegionalMapCanvas();
-        // Ensures the map panel fills the available space
-        regionalMapCanvas.setPreferredSize(new Dimension(800, 600)); 
 
         mapWrapper.add(mapHeader, BorderLayout.NORTH);
         mapWrapper.add(regionalMapCanvas, BorderLayout.CENTER);
@@ -403,16 +409,24 @@ public class VanGoKiosk extends JFrame {
 
         List<Schedule> visible = new ArrayList<>();
         for (Schedule s : schedules) {
-            if (!s.isDispatched()) visible.add(s);
+            if (!s.isDispatched()) {
+                visible.add(s);
+            }
         }
 
         visible.sort((a, b) -> {
             int destCmp = a.getDestination().compareToIgnoreCase(b.getDestination());
-            if (destCmp != 0) return destCmp;
+            if (destCmp != 0) {
+                return destCmp;
+            }
             int posA = driverQueue.positionOf(a.getDestination(), a.getVan());
             int posB = driverQueue.positionOf(b.getDestination(), b.getVan());
-            if (posA <= 0) posA = 999;
-            if (posB <= 0) posB = 999;
+            if (posA <= 0) {
+                posA = 999;
+            }
+            if (posB <= 0) {
+                posB = 999;
+            }
             return Integer.compare(posA, posB);
         });
 
@@ -479,8 +493,8 @@ public class VanGoKiosk extends JFrame {
             createClarityDetailRow(body, "Passenger Load", s.getBookedCount() + " / " + s.getCapacity() + " seats");
 
             String bc = RouteCorridor.breadcrumb(s.getChosenRoute());
-            JLabel lblRoute = new JLabel("<html><div style='width:320px; color:#FF6B00; font-size:11px;'>" +
-                    "Corridor: " + bc + "</div></html>");
+            JLabel lblRoute = new JLabel("<html><div style='width:320px; color:#FF6B00; font-size:11px;'>"
+                    + "Corridor: " + bc + "</div></html>");
             lblRoute.setAlignmentX(Component.LEFT_ALIGNMENT);
             body.add(Box.createRigidArea(new Dimension(0, 4)));
             body.add(lblRoute);
@@ -523,15 +537,17 @@ public class VanGoKiosk extends JFrame {
                 btn.addActionListener(e -> {
                     activeMapDestination = s.getDestination();
                     regionalMapCanvas.setTargetRoute(activeMapDestination, s.getChosenRoute());
-                    if (lblBreadcrumb != null) lblBreadcrumb.setText(RouteCorridor.breadcrumb(s.getChosenRoute()));
+                    if (lblBreadcrumb != null) {
+                        lblBreadcrumb.setText(RouteCorridor.breadcrumb(s.getChosenRoute()));
+                    }
                     renderScheduleCards();
 
                     int choice = JOptionPane.showConfirmDialog(
                             this,
-                            "Trip: Ormoc → " + activeMapDestination + " (Queue #1 Boarding)\n" +
-                            "Vehicle: " + s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")\n" +
-                            "Corridor: " + RouteCorridor.breadcrumb(s.getChosenRoute()) + "\n\n" +
-                            "Proceed to seat selection?",
+                            "Trip: Ormoc → " + activeMapDestination + " (Queue #1 Boarding)\n"
+                            + "Vehicle: " + s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")\n"
+                            + "Corridor: " + RouteCorridor.breadcrumb(s.getChosenRoute()) + "\n\n"
+                            + "Proceed to seat selection?",
                             "CONFIRM TRIP",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.INFORMATION_MESSAGE
@@ -550,10 +566,13 @@ public class VanGoKiosk extends JFrame {
             card.add(btn, BorderLayout.SOUTH);
 
             card.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override public void mouseClicked(java.awt.event.MouseEvent e) {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
                     activeMapDestination = s.getDestination();
                     regionalMapCanvas.setTargetRoute(activeMapDestination, s.getChosenRoute());
-                    if (lblBreadcrumb != null) lblBreadcrumb.setText(RouteCorridor.breadcrumb(s.getChosenRoute()));
+                    if (lblBreadcrumb != null) {
+                        lblBreadcrumb.setText(RouteCorridor.breadcrumb(s.getChosenRoute()));
+                    }
                     renderScheduleCards();
                 }
             });
@@ -567,80 +586,107 @@ public class VanGoKiosk extends JFrame {
     }
 
     private class RegionalMapCanvas extends JFXPanel {
+
         private WebEngine webEngine;
         private JSObject bridge;
-        private volatile boolean isInitialized = false;
-        private volatile boolean fxReady = false;
+        private final JavaBridge javaBridge = new JavaBridge();
+        private boolean isInitialized = false;
         private String pendingDest = "Maasin City";
         private String pendingWaypoint = "Baybay City";
         private List<String> pendingCustomRoute = null;
 
         public RegionalMapCanvas() {
             super();
-            // Set a default background so it's not a blank white box while loading
-            setBackground(CARD_SURFACE); 
-            
-            Platform.runLater(() -> {
-                try {
-                    WebView webView = new WebView();
-                    webView.setContextMenuEnabled(false);
-                    webEngine = webView.getEngine();
-
-                    webEngine.setOnError(event -> 
-                        System.err.println("[Map] WebEngine Error: " + event.getMessage()));
-
-                    webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                        System.out.println("[Map] Load Status: " + newState);
-                        if (newState == Worker.State.SUCCEEDED) {
-                            try {
-                                bridge = (JSObject) webEngine.executeScript("window");
-                                bridge.setMember("javaBridge", new JavaBridge());
-                                isInitialized = true;
-                                
-                                // Sync initial route if pending
-                                if (pendingCustomRoute != null) {
-                                    applyCustomRoute(pendingCustomRoute);
-                                } else if (pendingDest != null) {
-                                    applyRoute(pendingDest, pendingWaypoint);
-                                }
-                                System.out.println("[Map] Successfully initialized and bridge injected.");
-                            } catch (Exception ex) {
-                                System.err.println("[Map] Bridge injection failed.");
-                                ex.printStackTrace();
-                            }
-                        } else if (newState == Worker.State.FAILED) {
-                            System.err.println("[Map] Failed to load map2.html!");
-                            webEngine.loadContent("<html><body style='font-family:sans-serif;padding:20px;'><h2 style='color:#dc2626;'>Map Failed to Load</h2><p>Could not find <b>map2.html</b>. Make sure it is in the root of your classpath (src folder).</p></body></html>");
-                        }
-                    });
-
-                    // Robust loading fallback mechanism
-                    java.net.URL url = VanGoKiosk.class.getResource("/map2.html");
-                    if (url == null) url = VanGoKiosk.class.getResource("map2.html");
-                    
-                    if (url != null) {
-                        System.out.println("[Map] Loading from Classpath: " + url.toExternalForm());
-                        webEngine.load(url.toExternalForm());
-                    } else {
-                        File f = new File("map2.html");
-                        System.out.println("[Map] Classpath failed. Loading from File: " + f.getAbsolutePath());
-                        webEngine.load(f.toURI().toString());
-                    }
-
-                    setScene(new Scene(webView));
-                    fxReady = true;
-                } catch (Throwable t) {
-                    System.err.println("[Map] Fatal JavaFX initialization error!");
-                    t.printStackTrace();
+            addComponentListener(new java.awt.event.ComponentAdapter() {
+                @Override
+                public void componentResized(java.awt.event.ComponentEvent e) {
+                    refreshMapLayout();
                 }
+
+                @Override
+                public void componentShown(java.awt.event.ComponentEvent e) {
+                    refreshMapLayout();
+                }
+            });
+
+            Platform.runLater(() -> {
+                WebView webView = new WebView();
+                webEngine = webView.getEngine();
+                setScene(new Scene(webView));
+
+                webEngine.setJavaScriptEnabled(true);
+                webEngine.setOnError(event -> System.err.println("WebEngine error: " + event.getMessage()));
+                webEngine.getLoadWorker().exceptionProperty().addListener((obs, oldEx, newEx) -> {
+                    if (newEx != null) {
+                        newEx.printStackTrace();
+                    }
+                });
+
+                webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                    System.out.println("Map WebView state: " + newState);
+                    if (newState == Worker.State.FAILED) {
+                        Throwable err = webEngine.getLoadWorker().getException();
+                        if (err != null) {
+                            err.printStackTrace();
+                        } else {
+                            System.err.println("WebView failed to load map2.html without explicit exception.");
+                        }
+                    } else if (newState == Worker.State.SUCCEEDED) {
+                        try {
+                            bridge = (JSObject) webEngine.executeScript("window");
+                            if (bridge != null) {
+                                bridge.setMember("javaBridge", javaBridge);
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("Failed to bind JavaBridge: " + ex.getMessage());
+                        }
+                        isInitialized = true;
+                        flushPendingRoute();
+                        runJs("if (window.syncMapSize) { window.syncMapSize(); } else if (typeof map !== 'undefined' && map.invalidateSize) { map.invalidateSize(); }");
+                    }
+                });
+
+                java.net.URL url = VanGoKiosk.class.getResource("/map2.html");
+                if (url != null) {
+                    System.out.println("Loading map2.html from ClassPathResource: " + url.toExternalForm());
+                    webEngine.load(url.toExternalForm());
+                    return;
+                }
+
+                File[] candidateFiles = new File[]{
+                    new File("map2.html"),
+                    new File("VanGo", "map2.html"),
+                    new File("out", "map2.html"),
+                    new File("C:/Users/paul/Documents/ACTIVITIES IN 3RD YEAR/VANGO git/VanGo/map2.html")
+                };
+
+                for (File candidate : candidateFiles) {
+                    if (candidate.exists() && candidate.isFile()) {
+                        String fileUrl = candidate.toURI().toString();
+                        System.out.println("Loading map2.html from local file: " + fileUrl);
+                        webEngine.load(fileUrl);
+                        return;
+                    }
+                }
+
+                String errorMsg = "Unable to locate map2.html on classpath or disk.";
+                System.err.println(errorMsg);
+                webEngine.loadContent("<html><body style='font-family:sans-serif;padding:20px;color:red;'><h2>"
+                        + errorMsg + "</h2></body></html>");
             });
         }
 
         public class JavaBridge {
+
             public void onDestinationPicked(String name) {
+                if (name == null || name.trim().isEmpty()) {
+                    return;
+                }
                 SwingUtilities.invokeLater(() -> {
                     activeMapDestination = name;
-                    if (lblBreadcrumb != null) lblBreadcrumb.setText(RouteCorridor.breadcrumb(name));
+                    if (lblBreadcrumb != null) {
+                        lblBreadcrumb.setText(RouteCorridor.breadcrumb(name));
+                    }
                     renderScheduleCards();
                     setTargetRoute(name, selectedWaypoint);
                 });
@@ -651,43 +697,82 @@ public class VanGoKiosk extends JFrame {
             pendingCustomRoute = null;
             pendingDest = dest;
             pendingWaypoint = waypoint;
-            if (isInitialized && fxReady) {
+            if (isInitialized) {
                 applyRoute(dest, waypoint);
             }
         }
 
         public void setTargetRoute(String dest, List<String> customRoute) {
             pendingDest = dest;
-            pendingCustomRoute = (customRoute != null) ? new ArrayList<>(customRoute) : null;
-            if (isInitialized && fxReady) {
-                applyCustomRoute(customRoute);
+            if (customRoute != null && !customRoute.isEmpty()) {
+                pendingCustomRoute = new ArrayList<>(customRoute);
+                if (isInitialized) {
+                    applyCustomRoute(pendingCustomRoute);
+                }
+            } else {
+                pendingCustomRoute = null;
+                if (isInitialized) {
+                    applyRoute(dest, pendingWaypoint);
+                }
+            }
+        }
+
+        public void refreshMapLayout() {
+            if (!isInitialized) {
+                return;
+            }
+            runJs("if (window.syncMapSize) { window.syncMapSize(); } else if (typeof map !== 'undefined' && map.invalidateSize) { map.invalidateSize(); }");
+            flushPendingRoute();
+        }
+
+        private void flushPendingRoute() {
+            if (pendingCustomRoute != null && !pendingCustomRoute.isEmpty()) {
+                applyCustomRoute(pendingCustomRoute);
+            } else if (pendingDest != null) {
+                applyRoute(pendingDest, pendingWaypoint);
             }
         }
 
         private void applyRoute(String dest, String waypoint) {
-            Platform.runLater(() -> {
-                if (webEngine == null || !isInitialized) return;
-                String js = "updateRoute('" + jsEscape(dest) + "','" + jsEscape(waypoint) + "');";
-                try { webEngine.executeScript(js); }
-                catch (Exception e) { e.printStackTrace(); }
-            });
+            if (dest == null || dest.trim().isEmpty()) {
+                return;
+            }
+            String wp = (waypoint == null) ? "" : waypoint;
+            runJs("if (window.updateRoute) window.updateRoute('" + js(dest) + "','" + js(wp) + "', null);");
         }
 
         private void applyCustomRoute(List<String> route) {
-            Platform.runLater(() -> {
-                if (webEngine == null || route == null || !isInitialized) return;
-                StringBuilder sb = new StringBuilder("previewCustomRoute([");
-                for (int i = 0; i < route.size(); i++) {
-                    if (i > 0) sb.append(",");
-                    sb.append("'").append(jsEscape(route.get(i))).append("'");
+            if (route == null || route.isEmpty()) {
+                return;
+            }
+            StringBuilder sb = new StringBuilder("if (window.previewCustomRoute) window.previewCustomRoute([");
+            for (int i = 0; i < route.size(); i++) {
+                if (i > 0) {
+                    sb.append(",");
                 }
-                sb.append("]);");
-                try { webEngine.executeScript(sb.toString()); }
-                catch (Exception e) { e.printStackTrace(); }
+                sb.append("'").append(js(route.get(i))).append("'");
+            }
+            sb.append("]);");
+            runJs(sb.toString());
+        }
+
+        private void runJs(String script) {
+            Platform.runLater(() -> {
+                if (webEngine == null) {
+                    return;
+                }
+                if (webEngine.getLoadWorker().getState() != Worker.State.SUCCEEDED) {
+                    return;
+                }
+                try {
+                    webEngine.executeScript(script);
+                } catch (Exception ex) {
+                    System.err.println("JS Execution error: " + ex.getMessage());
+                }
             });
         }
 
-        private String jsEscape(String s) {
+        private String js(String s) {
             return (s == null) ? "" : s.replace("\\", "\\\\").replace("'", "\\'");
         }
     }
@@ -770,7 +855,7 @@ public class VanGoKiosk extends JFrame {
 
         ClarityButton btnBack = new ClarityButton("← Change Trip", CARD_SURFACE, BRAND_NAVY, BORDER_NEUTRAL, 14);
         btnBack.setPreferredSize(new Dimension(140, 48));
-        btnBack.addActionListener(e -> cardLayout.show(mainContainer, "SCHEDULE"));
+        btnBack.addActionListener(e -> openScheduleView());
 
         ClarityButton btnProceed = new ClarityButton("Proceed to Booking  →", BRAND_ORANGE, Color.WHITE, BRAND_ORANGE, 14);
         btnProceed.setPreferredSize(new Dimension(200, 48));
@@ -798,7 +883,8 @@ public class VanGoKiosk extends JFrame {
 
     private JPanel createLegendChip(String text, Color bg, Color fg) {
         JPanel chip = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(bg);
@@ -860,8 +946,10 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void addAnimatedSeatToCanvas(int seatNum, double centerX, double centerY,
-                                         double width, double height, boolean isJump) {
-        if (seatNum > selectedSchedule.getVan().getCapacity()) return;
+            double width, double height, boolean isJump) {
+        if (seatNum > selectedSchedule.getVan().getCapacity()) {
+            return;
+        }
 
         boolean isOccupied = selectedSchedule.isSeatBooked(seatNum);
 
@@ -879,7 +967,7 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void setImageRelativeBounds(JComponent component, double centerX, double centerY,
-                                        double width, double height) {
+            double width, double height) {
         java.awt.geom.Rectangle2D bounds = vanBackgroundCanvas.getImageBounds();
         int componentWidth = (int) Math.round(bounds.getWidth() * width);
         int componentHeight = (int) Math.round(bounds.getHeight() * height);
@@ -893,7 +981,7 @@ public class VanGoKiosk extends JFrame {
 
         double[][] seats;
         if (modelName.contains("NV350")) {
-            seats = new double[][] {
+            seats = new double[][]{
                 {0.294, 0.224}, {0.294, 0.424}, {0.294, 0.644},
                 {0.444, 0.224}, {0.444, 0.424}, {0.444, 0.644},
                 {0.594, 0.224}, {0.594, 0.424}, {0.594, 0.644},
@@ -901,7 +989,7 @@ public class VanGoKiosk extends JFrame {
                 {0.728, 0.744}, {0.802, 0.744}
             };
         } else if (modelName.contains("URVAN")) {
-            seats = new double[][] {
+            seats = new double[][]{
                 {0.294, 0.224}, {0.294, 0.424}, {0.294, 0.644},
                 {0.444, 0.224}, {0.444, 0.424}, {0.444, 0.644},
                 {0.594, 0.224}, {0.594, 0.424}, {0.594, 0.644},
@@ -910,7 +998,7 @@ public class VanGoKiosk extends JFrame {
                 {0.144, 0.25}
             };
         } else {
-            seats = new double[][] {
+            seats = new double[][]{
                 {0.294, 0.224}, {0.294, 0.424}, {0.294, 0.775},
                 {0.444, 0.224}, {0.444, 0.424}, {0.444, 0.775},
                 {0.594, 0.224}, {0.594, 0.424}, {0.594, 0.644},
@@ -1026,11 +1114,11 @@ public class VanGoKiosk extends JFrame {
         summaryBody.setLayout(new BoxLayout(summaryBody, BoxLayout.Y_AXIS));
         summaryBody.setOpaque(false);
 
-        lblSumRef   = createClarityDetailRow(summaryBody, "Booking Ref No", "-");
-        lblSumDest  = createClarityDetailRow(summaryBody, "Destination", "-");
-        lblSumTime  = createClarityDetailRow(summaryBody, "Dispatch Rule", "-");
-        lblSumVan   = createClarityDetailRow(summaryBody, "Vehicle Model", "-");
-        lblSumDriver= createClarityDetailRow(summaryBody, "Driver", "-");
+        lblSumRef = createClarityDetailRow(summaryBody, "Booking Ref No", "-");
+        lblSumDest = createClarityDetailRow(summaryBody, "Destination", "-");
+        lblSumTime = createClarityDetailRow(summaryBody, "Dispatch Rule", "-");
+        lblSumVan = createClarityDetailRow(summaryBody, "Vehicle Model", "-");
+        lblSumDriver = createClarityDetailRow(summaryBody, "Driver", "-");
         lblSumSeats = createClarityDetailRow(summaryBody, "Selected Seats", "-");
 
         summaryBody.add(Box.createRigidArea(new Dimension(0, 12)));
@@ -1078,8 +1166,8 @@ public class VanGoKiosk extends JFrame {
 
         formFields.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        JLabel lblNotice = new JLabel("<html><body style='width: 320px; color: #475569;'>" +
-                "Present your booking reference code at the payment counter. Once all seats are filled, this van departs immediately.</body></html>");
+        JLabel lblNotice = new JLabel("<html><body style='width: 320px; color: #475569;'>"
+                + "Present your booking reference code at the payment counter. Once all seats are filled, this van departs immediately.</body></html>");
         lblNotice.setFont(VanGoTheme.font(12, Font.PLAIN));
         formFields.add(lblNotice);
 
@@ -1114,8 +1202,8 @@ public class VanGoKiosk extends JFrame {
         generatedReferenceNumber = "VG-" + (100000 + new Random().nextInt(900000));
 
         lblSumRef.setText(generatedReferenceNumber);
-        lblSumDest.setText(selectedSchedule.getDestination() +
-                " (" + RouteCorridor.breadcrumb(selectedSchedule.getChosenRoute()) + ")");
+        lblSumDest.setText(selectedSchedule.getDestination()
+                + " (" + RouteCorridor.breadcrumb(selectedSchedule.getChosenRoute()) + ")");
         lblSumTime.setText(selectedSchedule.getDepartureTime());
         lblSumVan.setText(selectedSchedule.getVan().getModel() + " (" + selectedSchedule.getVan().getPlateNumber() + ")");
         lblSumDriver.setText(selectedSchedule.getVan().getDriver().getName());
@@ -1152,15 +1240,15 @@ public class VanGoKiosk extends JFrame {
 
         boolean justFilled = selectedSchedule.isFull();
         String fullNotice = justFilled
-                ? "\n\nNOTICE: This van is now FULL (" + selectedSchedule.getBookedCount() + "/" + selectedSchedule.getCapacity() +
-                  ") and cleared for IMMEDIATE DISPATCH so Queue #2 can board next."
+                ? "\n\nNOTICE: This van is now FULL (" + selectedSchedule.getBookedCount() + "/" + selectedSchedule.getCapacity()
+                + ") and cleared for IMMEDIATE DISPATCH so Queue #2 can board next."
                 : "";
 
         JOptionPane.showMessageDialog(this,
-                "BOOKING SUBMITTED SUCCESSFULLY!\n\n" +
-                "Reference Number: " + generatedReferenceNumber + "\n" +
-                "Passenger: " + name + "\n" +
-                "Total Due: ₱" + String.format("%.2f", total) + fullNotice,
+                "BOOKING SUBMITTED SUCCESSFULLY!\n\n"
+                + "Reference Number: " + generatedReferenceNumber + "\n"
+                + "Passenger: " + name + "\n"
+                + "Total Due: ₱" + String.format("%.2f", total) + fullNotice,
                 "CONFIRMATION PASS GENERATED", JOptionPane.INFORMATION_MESSAGE);
 
         txtPassengerName.setText("");
@@ -1351,21 +1439,21 @@ public class VanGoKiosk extends JFrame {
         tabContentPanel = new JPanel(tabContentLayout);
         tabContentPanel.setOpaque(false);
 
-        tabContentPanel.add(buildDispatchAdminTab(),    "DISPATCH");
+        tabContentPanel.add(buildDispatchAdminTab(), "DISPATCH");
         tabContentPanel.add(buildDriverQueueAdminTab(), "QUEUE");
-        tabContentPanel.add(buildDispatchLogTab(),      "LOG");
-        tabContentPanel.add(buildCounterTab(),          "COUNTER");
-        tabContentPanel.add(buildSchedulesAdminTab(),   "SCHEDULES");
-        tabContentPanel.add(buildVansAdminTab(),        "VANS");
-        tabContentPanel.add(buildDriversAdminTab(),     "DRIVERS");
+        tabContentPanel.add(buildDispatchLogTab(), "LOG");
+        tabContentPanel.add(buildCounterTab(), "COUNTER");
+        tabContentPanel.add(buildSchedulesAdminTab(), "SCHEDULES");
+        tabContentPanel.add(buildVansAdminTab(), "VANS");
+        tabContentPanel.add(buildDriversAdminTab(), "DRIVERS");
 
-        addSegmentedTab("DISPATCH",  "Dispatch Hub");
-        addSegmentedTab("QUEUE",     "Route Masterlist & Queue");
-        addSegmentedTab("LOG",       "Dispatched Log");
-        addSegmentedTab("COUNTER",   "Payment Counter");
+        addSegmentedTab("DISPATCH", "Dispatch Hub");
+        addSegmentedTab("QUEUE", "Route Masterlist & Queue");
+        addSegmentedTab("LOG", "Dispatched Log");
+        addSegmentedTab("COUNTER", "Payment Counter");
         addSegmentedTab("SCHEDULES", "Trip Schedules");
-        addSegmentedTab("VANS",      "Fleet Vans");
-        addSegmentedTab("DRIVERS",   "Driver Registry");
+        addSegmentedTab("VANS", "Fleet Vans");
+        addSegmentedTab("DRIVERS", "Driver Registry");
 
         JPanel center = new JPanel(new BorderLayout(0, 10));
         center.setOpaque(false);
@@ -1404,7 +1492,8 @@ public class VanGoKiosk extends JFrame {
                 new EmptyBorder(12, 14, 12, 14)));
 
         JPanel stripe = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(accent);
@@ -1437,11 +1526,21 @@ public class VanGoKiosk extends JFrame {
         textCol.add(lblSub);
 
         switch (title) {
-            case "Trips Today":        kpiValueTrips    = lblValue; break;
-            case "Ready to Dispatch":  kpiValueReady    = lblValue; break;
-            case "Pending Approval":   kpiValuePending  = lblValue; break;
-            case "Boarding":           kpiValueBoarding = lblValue; break;
-            case "Fleet Utilization":  kpiValueUtil     = lblValue; break;
+            case "Trips Today":
+                kpiValueTrips = lblValue;
+                break;
+            case "Ready to Dispatch":
+                kpiValueReady = lblValue;
+                break;
+            case "Pending Approval":
+                kpiValuePending = lblValue;
+                break;
+            case "Boarding":
+                kpiValueBoarding = lblValue;
+                break;
+            case "Fleet Utilization":
+                kpiValueUtil = lblValue;
+                break;
         }
 
         card.add(stripe, BorderLayout.WEST);
@@ -1450,25 +1549,43 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void refreshKpiCards() {
-        if (kpiValueTrips    != null) kpiValueTrips.setText(String.valueOf(schedules.size()));
-        if (kpiValueReady    != null) kpiValueReady.setText(String.valueOf(countReady()));
-        if (kpiValuePending  != null) kpiValuePending.setText(String.valueOf(countPendingApproval()));
-        if (kpiValueBoarding != null) kpiValueBoarding.setText(String.valueOf(countBoarding()));
-        if (kpiValueUtil     != null) kpiValueUtil.setText(fleetUtilizationPct() + "%");
+        if (kpiValueTrips != null) {
+            kpiValueTrips.setText(String.valueOf(schedules.size()));
+        }
+        if (kpiValueReady != null) {
+            kpiValueReady.setText(String.valueOf(countReady()));
+        }
+        if (kpiValuePending != null) {
+            kpiValuePending.setText(String.valueOf(countPendingApproval()));
+        }
+        if (kpiValueBoarding != null) {
+            kpiValueBoarding.setText(String.valueOf(countBoarding()));
+        }
+        if (kpiValueUtil != null) {
+            kpiValueUtil.setText(fleetUtilizationPct() + "%");
+        }
     }
 
     private int countReady() {
         int n = 0;
-        for (Schedule s : schedules)
-            if (!s.isDispatched() && (s.isFull() || s.getDriverDepartureRequested())) n++;
+        for (Schedule s : schedules) {
+            if (!s.isDispatched() && (s.isFull() || s.getDriverDepartureRequested())) {
+                n++;
+            }
+        }
         return n;
     }
+
     private int countPendingApproval() {
         int n = 0;
-        for (Schedule s : schedules)
-            if (s.getDriverDepartureRequested() && !s.isDispatched()) n++;
+        for (Schedule s : schedules) {
+            if (s.getDriverDepartureRequested() && !s.isDispatched()) {
+                n++;
+            }
+        }
         return n;
     }
+
     private int countBoarding() {
         int n = 0;
         for (Schedule s : schedules) {
@@ -1479,9 +1596,13 @@ public class VanGoKiosk extends JFrame {
         }
         return n;
     }
+
     private int fleetUtilizationPct() {
         int booked = 0, cap = 0;
-        for (Schedule s : schedules) { booked += s.getBookedCount(); cap += s.getCapacity(); }
+        for (Schedule s : schedules) {
+            booked += s.getBookedCount();
+            cap += s.getCapacity();
+        }
         return cap == 0 ? 0 : Math.round(booked * 100f / cap);
     }
 
@@ -1498,7 +1619,9 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void showTab(String key) {
-        if (tabContentLayout == null) return;
+        if (tabContentLayout == null) {
+            return;
+        }
         tabContentLayout.show(tabContentPanel, key);
         for (Map.Entry<String, ClarityButton> e : tabButtons.entrySet()) {
             boolean active = e.getKey().equals(key);
@@ -1509,30 +1632,55 @@ public class VanGoKiosk extends JFrame {
     }
 
     private class StatusPillRenderer extends javax.swing.table.DefaultTableCellRenderer {
-        @Override public Component getTableCellRendererComponent(
+
+        @Override
+        public Component getTableCellRendererComponent(
                 JTable t, Object v, boolean sel, boolean focus, int row, int col) {
             String s = String.valueOf(v);
             Color bg, fg;
-            if (s.contains("READY") || s.contains("FULL")) { bg = VanGoTheme.WARN_BG; fg = SEMANTIC_AMBER; }
-            else if (s.contains("APPROVAL"))               { bg = VanGoTheme.DANGER_BG; fg = SEMANTIC_RED; }
-            else if (s.contains("STANDBY"))                { bg = VanGoTheme.SURFACE_ALT; fg = TEXT_MUTED; }
-            else if (s.contains("DISPATCHED"))             { bg = VanGoTheme.SURFACE_ALT; fg = VanGoTheme.TEXT_TERT; }
-            else                                           { bg = VanGoTheme.GO_BG; fg = SEMANTIC_GO; }
+            if (s.contains("READY") || s.contains("FULL")) {
+                bg = VanGoTheme.WARN_BG;
+                fg = SEMANTIC_AMBER;
+            } else if (s.contains("APPROVAL")) {
+                bg = VanGoTheme.DANGER_BG;
+                fg = SEMANTIC_RED;
+            } else if (s.contains("STANDBY")) {
+                bg = VanGoTheme.SURFACE_ALT;
+                fg = TEXT_MUTED;
+            } else if (s.contains("DISPATCHED")) {
+                bg = VanGoTheme.SURFACE_ALT;
+                fg = VanGoTheme.TEXT_TERT;
+            } else {
+                bg = VanGoTheme.GO_BG;
+                fg = SEMANTIC_GO;
+            }
             return makeStatusPill(shortStatus(s), bg, fg);
         }
+
         private String shortStatus(String s) {
-            if (s.contains("FULL"))       return "● FULL · READY TO DISPATCH";
-            if (s.contains("APPROVAL"))   return "● AWAITING APPROVAL";
-            if (s.contains("STANDBY"))    return s;
-            if (s.contains("DISPATCHED")) return "● DISPATCHED";
-            if (s.contains("BOARDING"))   return "● #1 BOARDING NOW";
+            if (s.contains("FULL")) {
+                return "● FULL · READY TO DISPATCH";
+            }
+            if (s.contains("APPROVAL")) {
+                return "● AWAITING APPROVAL";
+            }
+            if (s.contains("STANDBY")) {
+                return s;
+            }
+            if (s.contains("DISPATCHED")) {
+                return "● DISPATCHED";
+            }
+            if (s.contains("BOARDING")) {
+                return "● #1 BOARDING NOW";
+            }
             return s;
         }
     }
 
     private JLabel makeStatusPill(String text, Color bg, Color fg) {
         JLabel pill = new JLabel(text, SwingConstants.CENTER) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(bg);
@@ -1555,7 +1703,10 @@ public class VanGoKiosk extends JFrame {
 
         String[] cols = {"Trip ID", "Destination", "Queue #", "Queue Date", "Occupancy", "Vehicle", "Driver", "Status"};
         modelDispatch = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable table = createClarityTable(modelDispatch);
         table.setRowHeight(46);
@@ -1573,9 +1724,9 @@ public class VanGoKiosk extends JFrame {
         actTitle.setForeground(BRAND_NAVY);
         actTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel actHint = new JLabel("<html><div style='width:240px; color:#475569;'>" +
-                "Vans depart when <b>100% full</b> (or ≥70% load with approved early departure when fewer vans are queued)." +
-                "</div></html>");
+        JLabel actHint = new JLabel("<html><div style='width:240px; color:#475569;'>"
+                + "Vans depart when <b>100% full</b> (or ≥70% load with approved early departure when fewer vans are queued)."
+                + "</div></html>");
         actHint.setFont(VanGoTheme.font(11, Font.PLAIN));
         actHint.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -1603,7 +1754,9 @@ public class VanGoKiosk extends JFrame {
             }
             String tripId = (String) modelDispatch.getValueAt(selectedRow, 0);
             Schedule sch = findScheduleById(tripId);
-            if (sch != null) executeDispatchFlow(sch);
+            if (sch != null) {
+                executeDispatchFlow(sch);
+            }
         });
 
         btnRejectEarly.addActionListener(e -> {
@@ -1616,8 +1769,12 @@ public class VanGoKiosk extends JFrame {
             Schedule sch = findScheduleById(tripId);
             if (sch != null && sch.getDriverDepartureRequested()) {
                 String reason = JOptionPane.showInputDialog(this, "Enter reason for rejecting early departure:", "Insufficient passengers — wait until van fills up");
-                if (reason == null) return;
-                if (reason.trim().isEmpty()) reason = "Insufficient passengers — wait until van fills up";
+                if (reason == null) {
+                    return;
+                }
+                if (reason.trim().isEmpty()) {
+                    reason = "Insufficient passengers — wait until van fills up";
+                }
 
                 sch.setDriverDepartureRequested(false);
                 sch.setState(Schedule.DispatchState.SCHEDULED);
@@ -1642,7 +1799,10 @@ public class VanGoKiosk extends JFrame {
 
         String[] cols = {"Trip ID", "Destination", "Dispatch Rule", "Vehicle", "Driver", "Dispatched At", "Corridor"};
         modelDispatchLog = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable table = createClarityTable(modelDispatchLog);
         table.setRowHeight(40);
@@ -1663,11 +1823,11 @@ public class VanGoKiosk extends JFrame {
 
         if (!frontVan.getId().equals(schedule.getVan().getId())) {
             String message = String.format(
-                    "FCFS QUEUE ORDER LOCK!\n\n" +
-                    "Route: %s\n\n" +
-                    "Selected Van: %s (%s) — Queue #%d\n" +
-                    "Queue #1 Leader: %s (%s) driven by %s\n\n" +
-                    "Queue #1 must depart (or be forfeited if absent) before later vans can depart.",
+                    "FCFS QUEUE ORDER LOCK!\n\n"
+                    + "Route: %s\n\n"
+                    + "Selected Van: %s (%s) — Queue #%d\n"
+                    + "Queue #1 Leader: %s (%s) driven by %s\n\n"
+                    + "Queue #1 must depart (or be forfeited if absent) before later vans can depart.",
                     dest,
                     schedule.getVan().getModel(), schedule.getVan().getPlateNumber(), driverQueue.positionOf(dest, schedule.getVan()),
                     frontVan.getModel(), frontVan.getPlateNumber(), frontVan.getDriver().getName()
@@ -1682,19 +1842,19 @@ public class VanGoKiosk extends JFrame {
 
         if (!schedule.isFull() && !schedule.getDriverDepartureRequested()) {
             JOptionPane.showMessageDialog(this,
-                    "CANNOT DISPATCH YET — VAN NOT FULL\n\n" +
-                    "Current Load: " + booked + " / " + cap + " passengers.\n" +
-                    "Under Fill-and-Depart rules, a van cannot proceed unless it is full (100%),\n" +
-                    "or the driver requests Early Departure with at least " + minRequired + " passengers (70% load).",
+                    "CANNOT DISPATCH YET — VAN NOT FULL\n\n"
+                    + "Current Load: " + booked + " / " + cap + " passengers.\n"
+                    + "Under Fill-and-Depart rules, a van cannot proceed unless it is full (100%),\n"
+                    + "or the driver requests Early Departure with at least " + minRequired + " passengers (70% load).",
                     "INSUFFICIENT PASSENGER LOAD", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (!schedule.isFull() && booked < minRequired) {
             JOptionPane.showMessageDialog(this,
-                    "EARLY DEPARTURE BLOCKED — TOO FEW PASSENGERS\n\n" +
-                    "Current Load: " + booked + " / " + cap + " passengers (Minimum required: " + minRequired + " seats / 70%).\n" +
-                    "The van cannot proceed on the " + dest + " route with insufficient passengers.",
+                    "EARLY DEPARTURE BLOCKED — TOO FEW PASSENGERS\n\n"
+                    + "Current Load: " + booked + " / " + cap + " passengers (Minimum required: " + minRequired + " seats / 70%).\n"
+                    + "The van cannot proceed on the " + dest + " route with insufficient passengers.",
                     "MINIMUM LOAD NOT MET", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -1712,13 +1872,13 @@ public class VanGoKiosk extends JFrame {
                 : ("No standby vans waiting in the " + dest + " queue.");
 
         JOptionPane.showMessageDialog(this,
-                "TRIP DISPATCHED SUCCESSFULLY!\n\n" +
-                "Trip ID: " + schedule.getId() + "\n" +
-                "Route: " + dest + "\n" +
-                "Passenger Load: " + booked + " / " + cap + "\n" +
-                "Dispatched Vehicle: " + schedule.getVan().getModel() + " (" + schedule.getVan().getPlateNumber() + ")\n" +
-                "Driver: " + schedule.getVan().getDriver().getName() + "\n\n" +
-                nextMsg,
+                "TRIP DISPATCHED SUCCESSFULLY!\n\n"
+                + "Trip ID: " + schedule.getId() + "\n"
+                + "Route: " + dest + "\n"
+                + "Passenger Load: " + booked + " / " + cap + "\n"
+                + "Dispatched Vehicle: " + schedule.getVan().getModel() + " (" + schedule.getVan().getPlateNumber() + ")\n"
+                + "Driver: " + schedule.getVan().getDriver().getName() + "\n\n"
+                + nextMsg,
                 "DISPATCH CONFIRMED", JOptionPane.INFORMATION_MESSAGE);
 
         refreshAdminTables();
@@ -1750,7 +1910,10 @@ public class VanGoKiosk extends JFrame {
 
         String[] cols = {"Route", "Queue #", "Queue Date", "Van Model", "Plate No", "Driver Name", "Occupancy", "Status"};
         modelQueue = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable table = createClarityTable(modelQueue);
         table.setRowHeight(42);
@@ -1766,9 +1929,9 @@ public class VanGoKiosk extends JFrame {
         ctrlTitle.setForeground(BRAND_NAVY);
         ctrlTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel ctrlDesc = new JLabel("<html><div style='width:245px; color:#475569;'>" +
-                "Select any queued van/driver row to update its <b>Queue Date</b> or <b>Forfeit</b> the slot if the driver is not present." +
-                "</div></html>");
+        JLabel ctrlDesc = new JLabel("<html><div style='width:245px; color:#475569;'>"
+                + "Select any queued van/driver row to update its <b>Queue Date</b> or <b>Forfeit</b> the slot if the driver is not present."
+                + "</div></html>");
         ctrlDesc.setFont(VanGoTheme.font(11, Font.PLAIN));
         ctrlDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -1798,7 +1961,9 @@ public class VanGoKiosk extends JFrame {
             String currentDate = (String) modelQueue.getValueAt(row, 2);
             String plate = (String) modelQueue.getValueAt(row, 4);
             Van targetVan = findVanByPlate(plate);
-            if (targetVan == null) return;
+            if (targetVan == null) {
+                return;
+            }
 
             String newDate = (String) JOptionPane.showInputDialog(
                     this,
@@ -1828,15 +1993,17 @@ public class VanGoKiosk extends JFrame {
             String plate = (String) modelQueue.getValueAt(row, 4);
             String driverName = (String) modelQueue.getValueAt(row, 5);
             Van targetVan = findVanByPlate(plate);
-            if (targetVan == null) return;
+            if (targetVan == null) {
+                return;
+            }
 
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "FORFEIT QUEUE SLOT — DRIVER NOT PRESENT?\n\n" +
-                    "Route: " + route + "\n" +
-                    "Queue Position: " + qPosStr + "\n" +
-                    "Driver: " + driverName + " (" + plate + ")\n\n" +
-                    "This will remove the absent driver from the " + route + " queue and immediately promote the next van in line.",
+                    "FORFEIT QUEUE SLOT — DRIVER NOT PRESENT?\n\n"
+                    + "Route: " + route + "\n"
+                    + "Queue Position: " + qPosStr + "\n"
+                    + "Driver: " + driverName + " (" + plate + ")\n\n"
+                    + "This will remove the absent driver from the " + route + " queue and immediately promote the next van in line.",
                     "CONFIRM QUEUE FORFEIT",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE
@@ -1852,33 +2019,14 @@ public class VanGoKiosk extends JFrame {
         return panel;
     }
 
-         private void forfeitDriverFromRoute(String route, Van van) {
-        // 1. Remove the trip from the schedules list
+    private void forfeitDriverFromRoute(String route, Van van) {
+        driverQueue.removeVan(route, van);
+        removeQueueDate(route, van);
+
         schedules.removeIf(s -> !s.isDispatched()
                 && s.getDestination().equalsIgnoreCase(route)
                 && s.getVan().getId().equals(van.getId()));
 
-        // 2. Remove from queue (handling both head and non-head positions)
-        List<Van> q = driverQueue.getQueue(route);
-        Van head = driverQueue.peek(route);
-        
-        if (head != null && head.getId().equals(van.getId())) {
-            driverQueue.dequeue(route);
-        } else {
-            // If it's not at the head, drain the queue and re-add the remaining ones
-            while (driverQueue.dequeue(route) != null) { 
-                // drain queue
-            }
-            for (Van v : q) {
-                if (!v.getId().equals(van.getId())) {
-                    driverQueue.enqueue(route, v);
-                }
-            }
-        }
-        
-        removeQueueDate(route, van);
-
-        // 3. Update UI
         Van nextUp = driverQueue.peek(route);
         String promoMsg = (nextUp != null)
                 ? ("Promoted to #1 Boarding Now: " + nextUp.getModel() + " (" + nextUp.getPlateNumber() + ") — Driver: " + nextUp.getDriver().getName())
@@ -1891,16 +2039,20 @@ public class VanGoKiosk extends JFrame {
         }
 
         JOptionPane.showMessageDialog(this,
-                "QUEUE SLOT FORFEITED (DRIVER ABSENT)\n\n" +
-                "Removed: " + van.getDriver().getName() + " (" + van.getPlateNumber() + ") from " + route + "\n" +
-                promoMsg,
+                "QUEUE SLOT FORFEITED (DRIVER ABSENT)\n\n"
+                + "Removed: " + van.getDriver().getName() + " (" + van.getPlateNumber() + ") from " + route + "\n"
+                + promoMsg,
                 "FORFEIT PROCESSED", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private Van findVanByPlate(String plate) {
-        if (plate == null) return null;
+        if (plate == null) {
+            return null;
+        }
         for (Van v : vans) {
-            if (v.getPlateNumber().equalsIgnoreCase(plate.trim())) return v;
+            if (v.getPlateNumber().equalsIgnoreCase(plate.trim())) {
+                return v;
+            }
         }
         return null;
     }
@@ -1949,13 +2101,13 @@ public class VanGoKiosk extends JFrame {
             if (bookingDatabase.containsKey(ref)) {
                 Booking b = bookingDatabase.get(ref);
                 txtReceipt.setText(
-                        "BOOKING REFERENCE: " + b.getReferenceNo() + "\n" +
-                        "Passenger: " + b.getPassengerName() + " (" + b.getPassengerContact() + ")\n" +
-                        "Destination: " + b.getSchedule().getDestination() + "\n" +
-                        "Dispatch Rule: " + b.getSchedule().getDepartureTime() + "\n" +
-                        "Seats: " + b.getSelectedSeats() + "\n" +
-                        "Total Due: ₱" + String.format("%.2f", b.getTotalAmount()) + "\n" +
-                        "Status: " + b.getStatus()
+                        "BOOKING REFERENCE: " + b.getReferenceNo() + "\n"
+                        + "Passenger: " + b.getPassengerName() + " (" + b.getPassengerContact() + ")\n"
+                        + "Destination: " + b.getSchedule().getDestination() + "\n"
+                        + "Dispatch Rule: " + b.getSchedule().getDepartureTime() + "\n"
+                        + "Seats: " + b.getSelectedSeats() + "\n"
+                        + "Total Due: ₱" + String.format("%.2f", b.getTotalAmount()) + "\n"
+                        + "Status: " + b.getStatus()
                 );
                 btnConfirmPay.setEnabled(true);
             } else {
@@ -1969,8 +2121,8 @@ public class VanGoKiosk extends JFrame {
             Booking b = bookingDatabase.get(ref);
             if (b != null) {
                 b.setStatus("PAID — BOARDING PASS ISSUED");
-                txtReceipt.append("\n\n>>> PAYMENT CONFIRMED AT " +
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " <<<");
+                txtReceipt.append("\n\n>>> PAYMENT CONFIRMED AT "
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " <<<");
                 btnConfirmPay.setEnabled(false);
             }
         });
@@ -1987,7 +2139,10 @@ public class VanGoKiosk extends JFrame {
 
         String[] cols = {"ID", "Destination", "Queue #", "Queue Date", "Dispatch Rule", "Fare", "Assigned Van", "Driver"};
         modelSchedules = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable table = createClarityTable(modelSchedules);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -2000,7 +2155,10 @@ public class VanGoKiosk extends JFrame {
         panel.setOpaque(false);
         String[] cols = {"ID", "Model", "Plate Number", "Capacity", "Driver"};
         modelVans = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         panel.add(new JScrollPane(createClarityTable(modelVans)), BorderLayout.CENTER);
         return panel;
@@ -2012,7 +2170,10 @@ public class VanGoKiosk extends JFrame {
         panel.setOpaque(false);
         String[] cols = {"ID", "Full Name", "License Number", "Phone"};
         modelDrivers = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         panel.add(new JScrollPane(createClarityTable(modelDrivers)), BorderLayout.CENTER);
         return panel;
@@ -2109,8 +2270,8 @@ public class VanGoKiosk extends JFrame {
         lblRouteQueueHeader.setFont(VanGoTheme.h3());
         lblRouteQueueHeader.setForeground(BRAND_NAVY);
 
-        JLabel lblQueueNote = new JLabel("<html><div style='color:#475569; font-size:11px;'>" +
-                "Masterlist of vans lined up on this route. Only <b>#1</b> boards passengers until full; <b>#2+</b> board next once #1 departs.</div></html>");
+        JLabel lblQueueNote = new JLabel("<html><div style='color:#475569; font-size:11px;'>"
+                + "Masterlist of vans lined up on this route. Only <b>#1</b> boards passengers until full; <b>#2+</b> board next once #1 departs.</div></html>");
 
         JPanel rqHead = new JPanel();
         rqHead.setLayout(new BoxLayout(rqHead, BoxLayout.Y_AXIS));
@@ -2121,7 +2282,10 @@ public class VanGoKiosk extends JFrame {
 
         String[] rqCols = {"Queue #", "Queue Date", "Van Model", "Plate No.", "Driver Name", "Load", "Status"};
         modelDriverRouteQueue = new DefaultTableModel(rqCols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable rqTable = createClarityTable(modelDriverRouteQueue);
         rqTable.setRowHeight(38);
@@ -2154,9 +2318,13 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void refreshDriverRouteQueueTable() {
-        if (modelDriverRouteQueue == null || cbDriverQueueDest == null) return;
+        if (modelDriverRouteQueue == null || cbDriverQueueDest == null) {
+            return;
+        }
         String dest = (String) cbDriverQueueDest.getSelectedItem();
-        if (dest == null) return;
+        if (dest == null) {
+            return;
+        }
 
         if (lblRouteQueueHeader != null) {
             lblRouteQueueHeader.setText("Route Queue Masterlist — " + dest + " (FCFS Order)");
@@ -2182,13 +2350,13 @@ public class VanGoKiosk extends JFrame {
                     : ("STANDBY (#" + pos + " IN LINE)");
 
             modelDriverRouteQueue.addRow(new Object[]{
-                    "#" + pos,
-                    getQueueDate(dest, v),
-                    v.getModel(),
-                    v.getPlateNumber(),
-                    v.getDriver().getName(),
-                    loadText,
-                    statusText
+                "#" + pos,
+                getQueueDate(dest, v),
+                v.getModel(),
+                v.getPlateNumber(),
+                v.getDriver().getName(),
+                loadText,
+                statusText
             });
             pos++;
         }
@@ -2199,7 +2367,9 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void handleDriverJoinQueue() {
-        if (loggedInDriver == null) return;
+        if (loggedInDriver == null) {
+            return;
+        }
         Van assignedVan = getVanForDriver(loggedInDriver);
         if (assignedVan == null) {
             JOptionPane.showMessageDialog(this, "No vehicle is assigned to your driver profile.", "NO VEHICLE ASSIGNED", JOptionPane.WARNING_MESSAGE);
@@ -2207,7 +2377,9 @@ public class VanGoKiosk extends JFrame {
         }
 
         String dest = (String) cbDriverQueueDest.getSelectedItem();
-        if (dest == null) return;
+        if (dest == null) {
+            return;
+        }
 
         String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         driverQueue.enqueueIfAbsent(dest, assignedVan);
@@ -2239,19 +2411,19 @@ public class VanGoKiosk extends JFrame {
                     : "You are #" + pos + " in line — your van will open for boarding as soon as the van(s) ahead fill up and depart.";
 
             JOptionPane.showMessageDialog(this,
-                    "LISTED IN " + dest.toUpperCase() + " QUEUE (FCFS)\n\n" +
-                    "Queue Number: #" + pos + " of " + totalInQueue + "\n" +
-                    "Queue Date: " + getQueueDate(dest, assignedVan) + "\n" +
-                    "Dispatch Rule: " + FILL_AND_DEPART_MODE + "\n" +
-                    "Trip ID: " + newId + "\n\n" +
-                    boardingNote,
+                    "LISTED IN " + dest.toUpperCase() + " QUEUE (FCFS)\n\n"
+                    + "Queue Number: #" + pos + " of " + totalInQueue + "\n"
+                    + "Queue Date: " + getQueueDate(dest, assignedVan) + "\n"
+                    + "Dispatch Rule: " + FILL_AND_DEPART_MODE + "\n"
+                    + "Trip ID: " + newId + "\n\n"
+                    + boardingNote,
                     "ADDED TO ROUTE QUEUE", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this,
-                    "ALREADY LISTED IN " + dest.toUpperCase() + " QUEUE\n\n" +
-                    "Your Queue Number: #" + pos + " of " + totalInQueue + "\n" +
-                    "Queue Date: " + getQueueDate(dest, assignedVan) + "\n" +
-                    "Trip ID: " + existing.getId(),
+                    "ALREADY LISTED IN " + dest.toUpperCase() + " QUEUE\n\n"
+                    + "Your Queue Number: #" + pos + " of " + totalInQueue + "\n"
+                    + "Queue Date: " + getQueueDate(dest, assignedVan) + "\n"
+                    + "Trip ID: " + existing.getId(),
                     "QUEUE POSITION CONFIRMED", JOptionPane.INFORMATION_MESSAGE);
         }
 
@@ -2261,38 +2433,59 @@ public class VanGoKiosk extends JFrame {
     }
 
     private double estimateFareForDestination(String dest) {
-        if (dest == null) return 250.00;
+        if (dest == null) {
+            return 250.00;
+        }
         switch (dest) {
-            case "Albuera": return 80.00;
-            case "Kananga": return 70.00;
-            case "Merida": return 90.00;
-            case "Isabel": return 120.00;
-            case "Palompon": return 160.00;
-            case "Baybay City": return 180.00;
-            case "Inopacan": return 220.00;
-            case "Hindang": return 240.00;
-            case "Hilongos": return 260.00;
-            case "Bato": return 280.00;
-            case "Matalom": return 300.00;
-            case "Maasin City": return 350.00;
+            case "Albuera":
+                return 80.00;
+            case "Kananga":
+                return 70.00;
+            case "Merida":
+                return 90.00;
+            case "Isabel":
+                return 120.00;
+            case "Palompon":
+                return 160.00;
+            case "Baybay City":
+                return 180.00;
+            case "Inopacan":
+                return 220.00;
+            case "Hindang":
+                return 240.00;
+            case "Hilongos":
+                return 260.00;
+            case "Bato":
+                return 280.00;
+            case "Matalom":
+                return 300.00;
+            case "Maasin City":
+                return 350.00;
             case "Capoocan":
-            case "Carigara": return 150.00;
+            case "Carigara":
+                return 150.00;
             case "Tunga":
             case "Jaro":
             case "Alangalang":
-            case "Santa Fe": return 200.00;
+            case "Santa Fe":
+                return 200.00;
             case "Palo":
             case "Tanauan":
-            case "Tacloban City": return 250.00;
+            case "Tacloban City":
+                return 250.00;
             case "Leyte":
             case "Biliran":
-            case "Naval": return 350.00;
-            default: return 380.00;
+            case "Naval":
+                return 350.00;
+            default:
+                return 380.00;
         }
     }
 
     private Van getVanForDriver(Driver driver) {
-        if (driver == null) return null;
+        if (driver == null) {
+            return null;
+        }
         for (Van v : vans) {
             if (v.getDriver() != null && v.getDriver().getId().equals(driver.getId())) {
                 return v;
@@ -2314,7 +2507,9 @@ public class VanGoKiosk extends JFrame {
     }
 
     private void renderDriverDashboard() {
-        if (loggedInDriver == null) return;
+        if (loggedInDriver == null) {
+            return;
+        }
         Van assignedVan = getVanForDriver(loggedInDriver);
 
         if (assignedVan != null) {
@@ -2359,182 +2554,218 @@ public class VanGoKiosk extends JFrame {
                 card.setAlignmentX(Component.LEFT_ALIGNMENT);
                 card.setBackground(CARD_SURFACE);
                 card.setBorder(BorderFactory.createCompoundBorder(
-                        new LineBorder(BORDER_NEUTRAL, 1, true),
+                        new LineBorder(isLeader && !s.isDispatched() ? BRAND_ORANGE : BORDER_NEUTRAL, isLeader && !s.isDispatched() ? 2 : 1, true),
                         new EmptyBorder(14, 16, 14, 16)
                 ));
 
-                JPanel top = new JPanel(new BorderLayout());
-                top.setOpaque(false);
+                JPanel topRow = new JPanel(new BorderLayout(0, 8));
+                topRow.setOpaque(false);
 
-                JLabel lblTrip = new JLabel("Trip " + s.getId() + " → " + s.getDestination());
-                lblTrip.setFont(VanGoTheme.font(14, Font.BOLD));
-                lblTrip.setForeground(BRAND_NAVY);
+                String posBadge = (qPos > 0) ? ("  |  Queue #" + qPos) : "";
+                String stateBadge = s.isDispatched() ? "  [DISPATCHED]"
+                        : (s.isFull() ? "  [FULL · READY TO DISPATCH]"
+                        : (isLeader ? "  [#1 BOARDING NOW]" : "  [STANDBY — WAITING FOR #" + (qPos - 1) + "]"));
 
-                JLabel lblStatus = new JLabel();
-                if (s.isDispatched()) {
-                    lblStatus.setText("DISPATCHED");
-                    lblStatus.setForeground(VanGoTheme.TEXT_TERT);
-                } else if (isLeader) {
-                    lblStatus.setText(s.isFull() ? "FULL · READY" : "#1 BOARDING NOW");
-                    lblStatus.setForeground(s.isFull() ? SEMANTIC_AMBER : SEMANTIC_GO);
-                } else {
-                    lblStatus.setText("STANDBY (#" + qPos + ")");
-                    lblStatus.setForeground(TEXT_MUTED);
-                }
-                lblStatus.setFont(VanGoTheme.font(11, Font.BOLD));
+                JLabel lblTripId = new JLabel("TRIP #" + s.getId() + "  →  " + s.getDestination() + posBadge + stateBadge);
+                lblTripId.setFont(VanGoTheme.font(14, Font.BOLD));
+                lblTripId.setForeground(s.isDispatched() ? TEXT_MUTED : BRAND_NAVY);
 
-                top.add(lblTrip, BorderLayout.WEST);
-                top.add(lblStatus, BorderLayout.EAST);
+                JLabel lblLoadInfo = new JLabel("Queue Date: " + getQueueDate(s.getDestination(), assignedVan)
+                        + "  |  Passengers: " + booked + " / " + cap + " (Min early depart: " + minEarlySeats + ")");
+                lblLoadInfo.setFont(VanGoTheme.font(12, Font.PLAIN));
+                lblLoadInfo.setForeground(TEXT_MUTED);
 
-                JPanel body = new JPanel();
-                body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-                body.setOpaque(false);
+                JPanel routePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+                routePanel.setOpaque(false);
+                JLabel lblRoad = new JLabel("Route:");
+                lblRoad.setFont(VanGoTheme.font(12, Font.BOLD));
+                lblRoad.setForeground(TEXT_MUTED);
 
-                createClarityDetailRow(body, "Queue Date", getQueueDate(s.getDestination(), assignedVan));
-                createClarityDetailRow(body, "Vehicle", s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")");
-                createClarityDetailRow(body, "Occupancy", booked + " / " + cap + " seats" + (s.getDriverDepartureRequested() ? "  (Early Request Pending)" : ""));
+                List<String> routeOptions = RouteCorridor.getRouteOptionsForDriver(s.getDestination());
+                JComboBox<String> cbRoads = new JComboBox<>(routeOptions.toArray(new String[0]));
+                cbRoads.setSelectedItem(routeOptions.get(0));
+                cbRoads.setFont(VanGoTheme.font(11, Font.PLAIN));
+                cbRoads.setEnabled(!s.isDispatched());
 
-                JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-                btnPanel.setOpaque(false);
+                JLabel lblSaved = new JLabel("Corridor: " + RouteCorridor.breadcrumb(s.getChosenRoute()));
+                lblSaved.setFont(VanGoTheme.font(11, Font.BOLD));
+                lblSaved.setForeground(SEMANTIC_GO);
 
-                if (!s.isDispatched() && isLeader && !s.getDriverDepartureRequested()) {
-                    ClarityButton btnReqEarly = new ClarityButton("Request Early Departure", BRAND_ORANGE, Color.WHITE, BRAND_ORANGE, 11);
-                    btnReqEarly.setPreferredSize(new Dimension(200, 32));
-                    btnReqEarly.addActionListener(e -> {
-                        if (booked < minEarlySeats) {
-                            JOptionPane.showMessageDialog(this, "Cannot request early departure yet.\nMust have at least " + minEarlySeats + " passengers (70% load).", "MINIMUM LOAD NOT MET", JOptionPane.WARNING_MESSAGE);
+                cbRoads.addActionListener(e -> {
+                    String opt = (String) cbRoads.getSelectedItem();
+                    List<String> chosen = RouteCorridor.getCanonicalRoute(s.getDestination());
+                    if ("Custom".equals(opt)) {
+                        List<String> customStops = promptCustomWaypoints(s.getDestination(), s.getChosenRoute());
+                        if (customStops != null && customStops.size() >= 2) {
+                            chosen = customStops;
+                        } else {
+                            cbRoads.setSelectedIndex(0);
                             return;
                         }
-                        s.setDriverDepartureRequested(true);
-                        JOptionPane.showMessageDialog(this, "Early departure request submitted to Admin.\nAwaiting approval.", "REQUEST SUBMITTED", JOptionPane.INFORMATION_MESSAGE);
-                        refreshAdminTables();
-                        renderDriverDashboard();
-                    });
-                    btnPanel.add(btnReqEarly);
-                } else if (!s.isDispatched() && s.getDriverDepartureRequested()) {
-                    JLabel lblWait = new JLabel("Awaiting Admin Approval...");
-                    lblWait.setFont(VanGoTheme.font(11, Font.ITALIC));
-                    lblWait.setForeground(SEMANTIC_AMBER);
-                    btnPanel.add(lblWait);
-                }
+                    } else if (opt != null && !opt.startsWith("Suggested")) {
+                        List<String> alt = RouteCorridor.getAlternativeRoute(s.getDestination(), opt);
+                        if (alt != null) {
+                            chosen = alt;
+                        }
+                    }
+                    s.setChosenRoute(chosen);
+                    lblSaved.setText("Corridor: " + RouteCorridor.breadcrumb(chosen));
+                    renderScheduleCards();
+                });
 
-                if (s.getRejectionReason() != null && !s.getRejectionReason().isEmpty() && !s.isDispatched()) {
-                    JLabel lblRej = new JLabel("<html><i>Reason: " + s.getRejectionReason() + "</i></html>");
-                    lblRej.setFont(VanGoTheme.font(11, Font.PLAIN));
-                    lblRej.setForeground(SEMANTIC_RED);
-                    body.add(Box.createRigidArea(new Dimension(0, 4)));
-                    body.add(lblRej);
-                }
+                ClarityButton btnViewQueue = new ClarityButton("Masterlist", BRAND_NAVY, Color.WHITE, BRAND_NAVY, 11);
+                btnViewQueue.setPreferredSize(new Dimension(100, 30));
+                btnViewQueue.addActionListener(e -> {
+                    cbDriverQueueDest.setSelectedItem(s.getDestination());
+                    refreshDriverRouteQueueTable();
+                });
 
-                card.add(top, BorderLayout.NORTH);
-                card.add(body, BorderLayout.CENTER);
-                card.add(btnPanel, BorderLayout.SOUTH);
+                ClarityButton btnPreview = new ClarityButton("Map", CARD_SURFACE, BRAND_NAVY, BORDER_NEUTRAL, 11);
+                btnPreview.setPreferredSize(new Dimension(65, 30));
+                btnPreview.addActionListener(e -> {
+                    activeMapDestination = s.getDestination();
+                    if (lblBreadcrumb != null) {
+                        lblBreadcrumb.setText(RouteCorridor.breadcrumb(s.getChosenRoute()));
+                    }
+                    regionalMapCanvas.setTargetRoute(s.getDestination(), s.getChosenRoute());
+                    openScheduleView();
+                });
 
+                ClarityButton btnEarlyDepart = new ClarityButton(
+                        s.isDispatched() ? "Dispatched" : (s.getDriverDepartureRequested() ? "Request Sent" : "Request Early Depart"),
+                        SEMANTIC_AMBER, Color.WHITE, SEMANTIC_AMBER, 11);
+                btnEarlyDepart.setPreferredSize(new Dimension(155, 30));
+                btnEarlyDepart.setEnabled(!s.isDispatched() && !s.getDriverDepartureRequested() && isLeader);
+                btnEarlyDepart.addActionListener(e -> {
+                    int vansInRoute = driverQueue.size(s.getDestination());
+                    if (s.getBookedCount() < minEarlySeats) {
+                        JOptionPane.showMessageDialog(this,
+                                "CANNOT REQUEST EARLY DEPARTURE — INSUFFICIENT PASSENGERS\n\n"
+                                + "Current Load: " + s.getBookedCount() + " / " + cap + " passengers.\n"
+                                + "Minimum required to proceed on " + s.getDestination() + ": " + minEarlySeats + " passengers (70% load).\n"
+                                + "Queued vans on route: " + vansInRoute + ". Continue boarding until load threshold or full capacity is reached.",
+                                "INSUFFICIENT PASSENGERS", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    s.setDriverDepartureRequested(true);
+                    refreshAdminTables();
+                    renderDriverDashboard();
+                    JOptionPane.showMessageDialog(this,
+                            "Early departure request sent to Admin (" + s.getBookedCount() + "/" + cap + " passengers onboard).\nAwaiting dispatch approval.",
+                            "EARLY DEPARTURE REQUESTED", JOptionPane.INFORMATION_MESSAGE);
+                });
+
+                routePanel.add(lblRoad);
+                routePanel.add(cbRoads);
+                routePanel.add(btnViewQueue);
+                routePanel.add(btnPreview);
+                routePanel.add(btnEarlyDepart);
+
+                JPanel headerStack = new JPanel();
+                headerStack.setLayout(new BoxLayout(headerStack, BoxLayout.Y_AXIS));
+                headerStack.setOpaque(false);
+                headerStack.add(lblTripId);
+                headerStack.add(Box.createRigidArea(new Dimension(0, 3)));
+                headerStack.add(lblLoadInfo);
+
+                topRow.add(headerStack, BorderLayout.NORTH);
+                topRow.add(routePanel, BorderLayout.CENTER);
+
+                card.add(topRow, BorderLayout.NORTH);
+                card.add(lblSaved, BorderLayout.SOUTH);
                 driverTripsContainer.add(card);
                 driverTripsContainer.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         }
 
         if (tripCount == 0) {
-            JLabel empty = new JLabel("No active trips assigned to your vehicle right now.");
-            empty.setFont(VanGoTheme.body());
-            empty.setForeground(TEXT_MUTED);
-            empty.setAlignmentX(Component.LEFT_ALIGNMENT);
-            driverTripsContainer.add(Box.createRigidArea(new Dimension(0, 20)));
-            driverTripsContainer.add(empty);
+            JPanel emptyCard = createClarityCard();
+            emptyCard.setLayout(new BorderLayout());
+            JLabel lblEmpty = new JLabel("You are not lined up on any route yet. Pick a route above and click '+ List Van into Route Queue (Fill-and-Depart)'.");
+            lblEmpty.setFont(VanGoTheme.body());
+            lblEmpty.setForeground(TEXT_MUTED);
+            emptyCard.add(lblEmpty, BorderLayout.CENTER);
+            driverTripsContainer.add(emptyCard);
         }
 
+        refreshDriverRouteQueueTable();
         driverTripsContainer.revalidate();
         driverTripsContainer.repaint();
+    }
 
-        refreshDriverRouteQueueTable();
+    private List<String> promptCustomWaypoints(String destination, List<String> currentRoute) {
+        List<String> canonical = RouteCorridor.getCanonicalRoute(destination);
+        if (canonical.size() <= 2) {
+            JOptionPane.showMessageDialog(this,
+                    "This route is a direct corridor (" + RouteCorridor.breadcrumb(canonical) + ") with no intermediate stops to customize.",
+                    "DIRECT ROUTE", JOptionPane.INFORMATION_MESSAGE);
+            return canonical;
+        }
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Select intermediate stops between Ormoc City and " + destination + ":"));
+        panel.add(Box.createRigidArea(new Dimension(0, 8)));
+
+        List<JCheckBox> boxes = new ArrayList<>();
+        for (int i = 1; i < canonical.size() - 1; i++) {
+            String stop = canonical.get(i);
+            JCheckBox cb = new JCheckBox(stop, currentRoute.contains(stop));
+            boxes.add(cb);
+            panel.add(cb);
+        }
+
+        int res = JOptionPane.showConfirmDialog(this, panel, "CUSTOMIZE ROUTE STOPS", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (res != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        List<String> custom = new ArrayList<>();
+        custom.add(canonical.get(0));
+        for (JCheckBox cb : boxes) {
+            if (cb.isSelected()) {
+                custom.add(cb.getText());
+            }
+        }
+        custom.add(canonical.get(canonical.size() - 1));
+        return custom;
+    }
+
+    private JTable createClarityTable(DefaultTableModel model) {
+        JTable table = new JTable(model) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        };
+        table.setRowHeight(38);
+        table.setFont(VanGoTheme.body());
+        return table;
+    }
+
+    private Schedule findScheduleById(String id) {
+        if (id == null) {
+            return null;
+        }
+        for (Schedule s : schedules) {
+            if (s.getId().equalsIgnoreCase(id)) {
+                return s;
+            }
+        }
+        return null;
     }
 
     private void refreshAdminTables() {
-        if (modelDispatch != null) {
-            modelDispatch.setRowCount(0);
-
-            String filter = cbAdminQueueRouteFilter != null
-                    ? (String) cbAdminQueueRouteFilter.getSelectedItem() : null;
-            boolean filterAll = (filter == null || filter.startsWith("All Routes"));
-
-            for (Schedule s : schedules) {
-                if (s.isDispatched()) continue;
-                int qPos = driverQueue.positionOf(s.getDestination(), s.getVan());
-                if (filterAll || s.getDestination().equalsIgnoreCase(filter)) {
-                    String status;
-                    if (s.getDriverDepartureRequested()) status = "AWAITING APPROVAL";
-                    else if (s.isFull()) status = "FULL · READY";
-                    else if (qPos == 1) status = "#1 BOARDING NOW";
-                    else status = "STANDBY (#" + qPos + ")";
-
-                    modelDispatch.addRow(new Object[]{
-                            s.getId(),
-                            s.getDestination(),
-                            "#" + (qPos <= 0 ? "-" : qPos),
-                            getQueueDate(s.getDestination(), s.getVan()),
-                            s.getBookedCount() + " / " + s.getCapacity(),
-                            s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")",
-                            s.getVan().getDriver().getName(),
-                            status
-                    });
-                }
-            }
-        }
-
-        if (modelQueue != null) {
-            modelQueue.setRowCount(0);
-            String filter = cbAdminQueueRouteFilter != null
-                    ? (String) cbAdminQueueRouteFilter.getSelectedItem() : null;
-            boolean filterAll = (filter == null || filter.startsWith("All Routes"));
-
-            for (Map.Entry<String, Deque<Van>> entry : driverQueue.getAllQueues().entrySet()) {
-                String route = entry.getKey();
-                if (!filterAll && !route.equalsIgnoreCase(filter)) continue;
-
-                int pos = 1;
-                for (Van v : entry.getValue()) {
-                    Schedule s = findScheduleByVanAndRoute(v, route);
-                    String load = (s != null) ? s.getBookedCount() + " / " + s.getCapacity() : "0 / " + v.getCapacity();
-                    String status = (pos == 1) ? "#1 BOARDING NOW"
-                                  : (s != null && s.isFull()) ? "FULL · READY"
-                                  : "STANDBY (#" + pos + ")";
-                    modelQueue.addRow(new Object[]{
-                            route, "#" + pos, getQueueDate(route, v),
-                            v.getModel(), v.getPlateNumber(),
-                            v.getDriver().getName(), load, status
-                    });
-                    pos++;
-                }
-            }
-        }
-
-        if (modelDispatchLog != null) {
-            modelDispatchLog.setRowCount(0);
-            for (Schedule s : schedules) {
-                if (!s.isDispatched()) continue;
-                modelDispatchLog.addRow(new Object[]{
-                        s.getId(), s.getDestination(), s.getDepartureTime(),
-                        s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")",
-                        s.getVan().getDriver().getName(),
-                        s.getDispatchedAt(),
-                        RouteCorridor.breadcrumb(s.getChosenRoute())
-                });
-            }
-        }
-
         if (modelSchedules != null) {
             modelSchedules.setRowCount(0);
             for (Schedule s : schedules) {
                 int qPos = driverQueue.positionOf(s.getDestination(), s.getVan());
                 modelSchedules.addRow(new Object[]{
-                        s.getId(), s.getDestination(),
-                        "#" + (qPos <= 0 ? "-" : qPos),
-                        getQueueDate(s.getDestination(), s.getVan()),
-                        s.getDepartureTime(),
-                        "₱" + String.format("%.2f", s.getFare()),
-                        s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")",
-                        s.getVan().getDriver().getName()
+                    s.getId(), s.getDestination(),
+                    qPos > 0 ? ("#" + qPos) : "Dispatched",
+                    getQueueDate(s.getDestination(), s.getVan()),
+                    s.getDepartureTime(), String.format("%.2f", s.getFare()),
+                    s.getVan().getModel() + " [" + s.getVan().getPlateNumber() + "]", s.getVan().getDriver().getName()
                 });
             }
         }
@@ -2542,19 +2773,100 @@ public class VanGoKiosk extends JFrame {
         if (modelVans != null) {
             modelVans.setRowCount(0);
             for (Van v : vans) {
-                modelVans.addRow(new Object[]{
-                        v.getId(), v.getModel(), v.getPlateNumber(),
-                        v.getCapacity(),
-                        v.getDriver() != null ? v.getDriver().getName() : "-"
-                });
+                modelVans.addRow(new Object[]{v.getId(), v.getModel(), v.getPlateNumber(), v.getCapacity(), v.getDriver().getName()});
             }
         }
 
         if (modelDrivers != null) {
             modelDrivers.setRowCount(0);
             for (Driver d : drivers) {
-                modelDrivers.addRow(new Object[]{
-                        d.getId(), d.getName(), d.getLicenseNo(), d.getPhone()
+                modelDrivers.addRow(new Object[]{d.getId(), d.getName(), d.getLicenseNo(), d.getPhone()});
+            }
+        }
+
+        if (modelQueue != null) {
+            modelQueue.setRowCount(0);
+            String selectedRouteFilter = (cbAdminQueueRouteFilter != null)
+                    ? (String) cbAdminQueueRouteFilter.getSelectedItem()
+                    : "All Routes (Masterlist)";
+
+            for (Map.Entry<String, Deque<Van>> entry : driverQueue.getAllQueues().entrySet()) {
+                String dest = entry.getKey();
+                if (selectedRouteFilter != null
+                        && !selectedRouteFilter.startsWith("All Routes")
+                        && !selectedRouteFilter.equalsIgnoreCase(dest)) {
+                    continue;
+                }
+                int pos = 1;
+                for (Van v : entry.getValue()) {
+                    String loadStr = "0 / " + v.getCapacity();
+                    boolean isFull = false;
+                    for (Schedule s : schedules) {
+                        if (!s.isDispatched()
+                                && s.getDestination().equals(dest)
+                                && s.getVan().getId().equals(v.getId())) {
+                            loadStr = s.getBookedCount() + " / " + s.getCapacity();
+                            isFull = s.isFull();
+                            break;
+                        }
+                    }
+                    String qStatus = (pos == 1)
+                            ? (isFull ? "FULL · READY FOR DISPATCH" : "#1 BOARDING NOW")
+                            : ("STANDBY (#" + pos + " IN LINE)");
+                    modelQueue.addRow(new Object[]{
+                        dest,
+                        "#" + pos++,
+                        getQueueDate(dest, v),
+                        v.getModel(),
+                        v.getPlateNumber(),
+                        v.getDriver().getName(),
+                        loadStr,
+                        qStatus
+                    });
+                }
+            }
+        }
+
+        if (modelDispatch != null) {
+            modelDispatch.setRowCount(0);
+            for (Schedule s : schedules) {
+                if (s.isDispatched()) {
+                    continue;
+                }
+                int qPos = driverQueue.positionOf(s.getDestination(), s.getVan());
+                String status;
+                if (s.isFull()) {
+                    status = "FULL · READY";
+                } else if (s.getDriverDepartureRequested()) {
+                    status = "AWAITING APPROVAL";
+                } else if (qPos > 1) {
+                    status = "STANDBY (#" + qPos + ")";
+                } else {
+                    status = "BOARDING";
+                }
+                modelDispatch.addRow(new Object[]{
+                    s.getId(), s.getDestination(),
+                    qPos > 0 ? ("#" + qPos) : "-",
+                    getQueueDate(s.getDestination(), s.getVan()),
+                    s.getBookedCount() + " / " + s.getCapacity(),
+                    s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")",
+                    s.getVan().getDriver().getName(), status
+                });
+            }
+        }
+
+        if (modelDispatchLog != null) {
+            modelDispatchLog.setRowCount(0);
+            for (Schedule s : schedules) {
+                if (!s.isDispatched()) {
+                    continue;
+                }
+                modelDispatchLog.addRow(new Object[]{
+                    s.getId(), s.getDestination(), s.getDepartureTime(),
+                    s.getVan().getModel() + " (" + s.getVan().getPlateNumber() + ")",
+                    s.getVan().getDriver().getName(),
+                    s.getDispatchedAt(),
+                    RouteCorridor.breadcrumb(s.getChosenRoute())
                 });
             }
         }
@@ -2562,46 +2874,13 @@ public class VanGoKiosk extends JFrame {
         refreshKpiCards();
     }
 
-    private Schedule findScheduleById(String id) {
-        for (Schedule s : schedules) if (s.getId().equals(id)) return s;
-        return null;
-    }
-
-    private Schedule findScheduleByVanAndRoute(Van van, String route) {
-        for (Schedule s : schedules) {
-            if (!s.isDispatched()
-                    && s.getVan().getId().equals(van.getId())
-                    && s.getDestination().equalsIgnoreCase(route)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    private JTable createClarityTable(DefaultTableModel model) {
-        JTable table = new JTable(model);
-        table.setFont(VanGoTheme.body());
-        table.setRowHeight(36);
-        table.setShowGrid(false);
-        table.setIntercellSpacing(new Dimension(0, 0));
-        table.setBackground(CARD_SURFACE);
-        table.setForeground(TEXT_PRIMARY);
-        table.setSelectionBackground(VanGoTheme.SURFACE_ALT);
-        table.setSelectionForeground(BRAND_NAVY);
-        table.getTableHeader().setFont(VanGoTheme.font(11, Font.BOLD));
-        table.getTableHeader().setBackground(VanGoTheme.SURFACE_ALT);
-        table.getTableHeader().setForeground(BRAND_NAVY);
-        table.getTableHeader().setBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_NEUTRAL));
-        table.setFillsViewportHeight(true);
-        return table;
-    }
-
     public static void main(String[] args) {
+        new JFXPanel();
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
             new VanGoKiosk().setVisible(true);
         });
     }
